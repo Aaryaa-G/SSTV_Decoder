@@ -151,10 +151,18 @@ import fs from "fs";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(
+   cors({
+     origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",
+     credentials: true,
+   })
+ );
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
+ 
+ // Ensure preflight responses also allow credentials
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -235,6 +243,11 @@ async function initFirebaseAndStart() {
     process.env.GCLOUD_PROJECT = projectId;
     process.env.FIREBASE_PROJECT_ID = projectId;
 
+    // if (process.env.FIREBASE_STORAGE_BUCKET) {
+    //   process.env.FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET.trim().replace(/\.firebasestorage\.app$/i, ".appspot.com");
+    //   }
+    //   console.log("Using FIREBASE_STORAGE_BUCKET:", process.env.FIREBASE_STORAGE_BUCKET || "<none>");
+
     // initialize admin
     if (!admin.apps.length) {
       const initOptions = {
@@ -246,6 +259,7 @@ async function initFirebaseAndStart() {
       else initOptions.credential = admin.credential.applicationDefault();
 
       admin.initializeApp(initOptions);
+      app.locals.db = admin.firestore();
     }
 
     app.locals.firebaseAdmin = admin;

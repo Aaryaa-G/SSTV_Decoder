@@ -65,11 +65,23 @@ export async function addDecodedImage(data = {}) {
 
 export async function getDecodedImagesByUid(uid, limit = 50) {
   if (!uid) return [];
-  const q = db().collection("decodedImages").where("uploaderUid", "==", uid).orderBy("uploadedAt", "desc").limit(limit);
-  const snap = await q.get();
-  const results = [];
-  snap.forEach((d) => results.push({ id: d.id, ...d.data() }));
-  return results;
+  try {
+    // Avoid composite-index requirement by not using orderBy in Firestore.
+    // Fetch a reasonable batch and sort in-memory by uploadedAt descending.
+    const snap = await db().collection("decodedImages").where("uploaderUid", "==", uid).limit(limit * 5).get();
+    const results = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    results.sort((a, b) => {
+      const ta = a.uploadedAt && a.uploadedAt.toDate ? a.uploadedAt.toDate().getTime() : a.uploadedAt ? new Date(a.uploadedAt).getTime() : 0;
+      const tb = b.uploadedAt && b.uploadedAt.toDate ? b.uploadedAt.toDate().getTime() : b.uploadedAt ? new Date(b.uploadedAt).getTime() : 0;
+      return tb - ta;
+    });
+
+    return results.slice(0, limit);
+  } catch (err) {
+    console.error("getDecodedImagesByUid failed:", err);
+    throw err;
+  }
 }
 
 export async function getDecodedImageById(id) {

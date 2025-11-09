@@ -44,12 +44,12 @@ const Profile = () => {
         username: res.data.username,
         email: res.data.email,
         callSign: res.data.callSign || "",
-        latitude: res.data.latitude || "",
-        longitude: res.data.longitude || "",
+        latitude: res.data.latitude ?? "",
+        longitude: res.data.longitude ?? "",
       });
       
       // Set initial map location if coordinates exist
-      if (res.data.latitude && res.data.longitude) {
+      if (res.data.latitude != null && res.data.longitude != null) {
         setMapLocation({
           lat: parseFloat(res.data.latitude),
           lon: parseFloat(res.data.longitude),
@@ -138,8 +138,8 @@ const Profile = () => {
       username: user.username,
       email: user.email,
       callSign: user.callSign || "",
-      latitude: user.latitude || "",
-      longitude: user.longitude || "",
+      latitude: user.latitude ?? "",
+      longitude: user.longitude ?? "",
     });
   };
 

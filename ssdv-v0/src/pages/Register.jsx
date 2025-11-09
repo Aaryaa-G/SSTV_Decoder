@@ -11,6 +11,8 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     callSign: "",
+    latitude: "",
+    longitude: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -94,6 +96,8 @@ const Register = () => {
         email: form.email,
         password: form.password,
         callSign: form.callSign,
+        latitude: form.latitude,
+        longitude: form.longitude,
       });
 
       console.log("Registration successful:", res.data);
@@ -267,6 +271,34 @@ const Register = () => {
               className="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none transition"
             />
           </div>
+
+          {/* Latitude (Optional) */}
+      <div>
+        <label className="text-gray-300 text-sm mb-2 block">Latitude (Optional)</label>
+        <input
+          type="number"
+          name="latitude"
+          placeholder="e.g., 37.7749"
+          value={form.latitude}
+          onChange={handleChange}
+          step="0.0001"
+          className="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none transition"
+        />
+      </div>
+
+      {/* Longitude (Optional) */}
+      <div>
+        <label className="text-gray-300 text-sm mb-2 block">Longitude (Optional)</label>
+        <input
+          type="number"
+          name="longitude"
+          placeholder="e.g., -122.4194"
+          value={form.longitude}
+          onChange={handleChange}
+         step="0.0001"
+          className="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none transition"
+        />
+     </div>
 
           {/* Submit Button */}
           <button
